@@ -8,7 +8,25 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func BenchmarkInstantiation(b *testing.B) {
+func BenchmarkInstantiate(b *testing.B) {
+	guest, err := os.ReadFile("../../testdata/generic-extism.wasm")
+	Expect(err).NotTo(HaveOccurred())
+
+	manifest := ext.Manifest{
+		Wasm: []ext.Wasm{
+			ext.WasmData{
+				Data: guest,
+			},
+		},
+	}
+
+	for n := 0; n < b.N; n++ {
+		_, err := NewFakePlugin(manifest)
+		Expect(err).NotTo(HaveOccurred())
+	}
+}
+
+func BenchmarkInstantiateAndRun(b *testing.B) {
 	guest, err := os.ReadFile("../../testdata/generic-extism.wasm")
 	Expect(err).NotTo(HaveOccurred())
 

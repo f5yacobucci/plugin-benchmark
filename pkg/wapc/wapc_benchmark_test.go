@@ -13,13 +13,37 @@ import (
 	"github.com/wapc/wapc-go"
 )
 
-func BenchmarkCreateEngine(b *testing.B) {
+func BenchmarkInstantiate(b *testing.B) {
+	engine := CreateEngine()
+
+	guest, err := os.ReadFile("../../testdata/generic-wapc.wasm")
+	Expect(err).NotTo(HaveOccurred())
+
+	mod, err := engine.New(
+		context.Background(),
+		nil,
+		guest,
+		&wapc.ModuleConfig{},
+	)
+	Expect(err).NotTo(HaveOccurred())
+	runtime.SetFinalizer(
+		mod,
+		func(m wapc.Module) {
+			m.Close(context.Background())
+		},
+	)
+
+	router := &FakeRouter{
+		lock: &sync.Mutex{},
+		tree: iradix.New[Callback](),
+	}
 	for n := 0; n < b.N; n++ {
-		_ = CreateEngine()
+		_, err := NewFakePlugin(mod, router)
+		Expect(err).NotTo(HaveOccurred())
 	}
 }
 
-func BenchmarkInstantiation(b *testing.B) {
+func BenchmarkInstantiateAndRun(b *testing.B) {
 	engine := CreateEngine()
 
 	guest, err := os.ReadFile("../../testdata/generic-wapc.wasm")
