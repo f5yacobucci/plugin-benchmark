@@ -26,7 +26,7 @@ func BenchmarkInstantiate(b *testing.B) {
 	}
 }
 
-func BenchmarkInstantiateAndRun(b *testing.B) {
+func BenchmarkInstantiateAndCallSingle(b *testing.B) {
 	guest, err := os.ReadFile("../../testdata/generic-extism.wasm")
 	Expect(err).NotTo(HaveOccurred())
 

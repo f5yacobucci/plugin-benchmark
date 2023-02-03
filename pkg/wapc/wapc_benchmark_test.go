@@ -43,7 +43,7 @@ func BenchmarkInstantiate(b *testing.B) {
 	}
 }
 
-func BenchmarkInstantiateAndRun(b *testing.B) {
+func BenchmarkInstantiateAndCallSingle(b *testing.B) {
 	engine := CreateEngine()
 
 	guest, err := os.ReadFile("../../testdata/generic-wapc.wasm")
